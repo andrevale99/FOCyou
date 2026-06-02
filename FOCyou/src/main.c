@@ -26,8 +26,7 @@ int main(void)
 
     while (1)
     {
-        lcd16x2_send_cmd(&handlelcd16x2, SET_DDRAM | 0x03);
-        delay_ms(1000);
+        lcd16x2_write_string(&handlelcd16x2, msg, 3);
         lcd16x2_send_cmd(&handlelcd16x2, RETURN_HOME);
         delay_ms(1000);
         lcd16x2_send_cmd(&handlelcd16x2, SHIFT_RIGHT);

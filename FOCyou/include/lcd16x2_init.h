@@ -73,7 +73,7 @@ void write_rs(uint8_t state)
     if (state)
         GPIOB->BSRR |= (1 << LCD_GPIO_RS);
     else
-        GPIOB->BSRR |= (1 << (LCD_GPIO_EN + 16));
+        GPIOB->BSRR |= (1 << (LCD_GPIO_RS + 16));
 }
 
 
