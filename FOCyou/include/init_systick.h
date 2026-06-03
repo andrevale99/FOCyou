@@ -1,8 +1,9 @@
-#ifndef SYSTICK_H
-#define SYSTICK_H
+#ifndef INIT_SYSTICK_H
+#define INIT_SYSTICK_H
 
-#include <stm32f411xe.h>
 #include <stdint.h>
+
+#include "libmcu.h"
 
 static volatile uint32_t msTicks = 0; 
 
@@ -13,7 +14,7 @@ void SysTick_Handler(void)
 }
 
 /* Inicializa SysTick para 1 ms */
-void systick_init(void)
+void init_systick(void)
 {
     SystemCoreClockUpdate();
     SysTick_Config(SystemCoreClock / 1000);

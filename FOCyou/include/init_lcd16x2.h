@@ -1,31 +1,26 @@
-#ifndef LCD16X2_INIT
-#define LCD16X2_INIT
+#ifndef INIT_LCD16X2_H
+#define INIT_LCD16X2_H
 
-#include <stm32f411xe.h>
+#include "libmcu.h"
 
 #define LCD_GPIO_D4 0
 #define LCD_GPIO_D5 1
 #define LCD_GPIO_D6 2
 #define LCD_GPIO_D7 3
-#define LCD_GPIO_EN 12
-#define LCD_GPIO_RS 13
+#define LCD_GPIO_EN 4
+#define LCD_GPIO_RS 5
 
 // =================================
 // SETUP PARA O LCD16x2
 // =================================
 
-void gpio_lcd16x2_setup(void)
+void init_periferico_lcd16x2(void)
 {
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
 
-    // Pinos A0,A1,A2 e A3 como output
-    GPIOA->MODER |= (0x55);
-    GPIOA->OSPEEDR |= (0xAA);
-
-    // Pinos B12 (EN) e B13 (RS)
-    GPIOB->MODER |= (0x5 << 24);
-    GPIOB->OSPEEDR |= (0xA << 24);
+    // Pinos A0,A1,A2,A3,A4 e A5 como output
+    GPIOA->MODER |= (0x555);
+    GPIOA->OSPEEDR |= (0xAAA);
 }
 
 void write_d4(uint8_t state)
@@ -63,17 +58,17 @@ void write_d7(uint8_t state)
 void write_en(uint8_t state)
 {
     if (state)
-        GPIOB->BSRR |= (1 << LCD_GPIO_EN); // EN = 1
+        GPIOA->BSRR |= (1 << LCD_GPIO_EN); // EN = 1
     else
-        GPIOB->BSRR |= (1 << (LCD_GPIO_EN + 16)); // EN = 0
+        GPIOA->BSRR |= (1 << (LCD_GPIO_EN + 16)); // EN = 0
 }
 
 void write_rs(uint8_t state)
 {
     if (state)
-        GPIOB->BSRR |= (1 << LCD_GPIO_RS);
+        GPIOA->BSRR |= (1 << LCD_GPIO_RS);
     else
-        GPIOB->BSRR |= (1 << (LCD_GPIO_RS + 16));
+        GPIOA->BSRR |= (1 << (LCD_GPIO_RS + 16));
 }
 
 
