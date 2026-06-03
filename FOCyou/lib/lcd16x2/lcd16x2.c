@@ -1,8 +1,29 @@
 #include "lcd16x2.h"
 
+/**
+ * @brief Gera um pulso no pino Enable do LCD.
+ *
+ * Esta função realiza o acionamento do sinal Enable (`EN`) do display,
+ * permitindo que o LCD capture os dados presentes nas linhas de comunicação.
+ * O pulso respeita pequenos atrasos para garantir a sincronização do
+ * controlador LCD.
+ *
+ * @param handle Ponteiro para a estrutura de controle do LCD.
+ */
+static void pulse_enable(const lcd16x2_handle *handle)
+{
+    handle->delay_ms(1);
+
+    handle->en.write(1);
+    handle->delay_ms(1);
+    handle->en.write(0);
+
+    handle->delay_ms(1);
+}
+
 int8_t lcd16x2_init_4bits(const lcd16x2_handle *handle)
 {
-    if (!(handle->delay_ms))
+    if (!(handle->delay_ms) || !handle)
         return -1;
 
     handle->delay_ms(100);
@@ -46,7 +67,7 @@ int8_t lcd16x2_init_4bits(const lcd16x2_handle *handle)
     return 0;
 }
 
-int8_t lcd16x2_send_cmd(const lcd16x2_handle *handle, uint8_t cmd)
+void lcd16x2_send_cmd(const lcd16x2_handle *handle, uint8_t cmd)
 {
     /* RS = 0 para comando */
     handle->rs.write(0);
@@ -66,11 +87,9 @@ int8_t lcd16x2_send_cmd(const lcd16x2_handle *handle, uint8_t cmd)
     pulse_enable(handle);
 
     handle->delay_ms(2);
-
-    return 0;
 }
 
-int8_t lcd16x2_send_data(const lcd16x2_handle *handle, uint8_t data)
+void lcd16x2_send_data(const lcd16x2_handle *handle, uint8_t data)
 {
     /* RS = 1 para dado */
     handle->rs.write(1);
@@ -90,8 +109,6 @@ int8_t lcd16x2_send_data(const lcd16x2_handle *handle, uint8_t data)
     pulse_enable(handle);
 
     handle->delay_ms(1); // pode reduzir depois
-
-    return 0;
 }
 
 void lcd16x2_write_string(const lcd16x2_handle *handle, const char *str, uint8_t size)
@@ -99,15 +116,4 @@ void lcd16x2_write_string(const lcd16x2_handle *handle, const char *str, uint8_t
 
     for (uint8_t idx = 0; idx < size; ++idx)
         lcd16x2_send_data(handle, str[idx]);
-}
-
-void pulse_enable(const lcd16x2_handle *handle)
-{
-    handle->delay_ms(1);
-
-    handle->en.write(1);
-    handle->delay_ms(1);
-    handle->en.write(0);
-
-    handle->delay_ms(1);
 }

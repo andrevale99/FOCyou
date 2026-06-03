@@ -57,14 +57,58 @@ typedef struct
     void (*delay_ms)(uint32_t);
 } lcd16x2_handle;
 
-int8_t lcd16x2_init_4bits(const lcd16x2_handle *handle);
+/**
+ * @brief Inicializa o display LCD 16x2 no modo de comunicação de 4 bits.
+ *
+ * Esta função executa a sequência de inicialização necessária para
+ * configurar o controlador LCD compatível com HD44780 em modo de 4 bits.
+ * Também configura o número de linhas, limpa o display, habilita o cursor
+ * piscante e define o modo de incremento automático do cursor.
+ *
+ * @param handle Ponteiro para a estrutura de controle do LCD.
+ *
+ * @return int8_t
+ * @retval 0 Inicialização realizada com sucesso.
+ * @retval -1 Ponteiro para função de atraso (`delay_ms`) inválido,
+ * ou handle vazio.
+ */
+int8_t lcd16x2_init_4bits(const lcd16x2_handle *);
 
-int8_t lcd16x2_send_cmd(const lcd16x2_handle *handle, uint8_t cmd);
+/**
+ * @brief Envia um comando para o display LCD.
+ *
+ * A função transmite um comando de 8 bits ao LCD utilizando
+ * comunicação em modo de 4 bits. O byte é dividido em dois nibbles:
+ * primeiro os 4 bits mais significativos e depois os 4 bits menos
+ * significativos.
+ *
+ * @param handle Ponteiro para a estrutura de controle do LCD.
+ * @param cmd Comando de 8 bits a ser enviado ao display.
+ */
+void lcd16x2_send_cmd(const lcd16x2_handle *, uint8_t );
 
-int8_t lcd16x2_send_data(const lcd16x2_handle *handle, uint8_t data);
+/**
+ * @brief Envia um dado para o display LCD.
+ *
+ * Esta função envia um byte de dados ao LCD no modo de 4 bits.
+ * Geralmente é utilizada para transmitir caracteres ASCII que serão
+ * exibidos no display.
+ *
+ * @param handle Ponteiro para a estrutura de controle do LCD.
+ * @param data Dado de 8 bits a ser enviado ao display.
+ */
+void lcd16x2_send_data(const lcd16x2_handle *, uint8_t );
 
-void lcd16x2_write_string(const lcd16x2_handle *handle, const char *str, uint8_t size);
-
-void pulse_enable(const lcd16x2_handle *handle);
+/**
+ * @brief Escreve uma sequência de caracteres no display LCD.
+ *
+ * A função envia uma string caractere por caractere ao display,
+ * utilizando a função de transmissão de dados.
+ *
+ * @param handle Ponteiro para a estrutura de controle do LCD.
+ * @param str Ponteiro para a string a ser escrita.
+ * @param size Quantidade de caracteres que serão enviados.
+ */
+void lcd16x2_write_string(const lcd16x2_handle *, const char *sr, uint8_t );
 
 #endif
