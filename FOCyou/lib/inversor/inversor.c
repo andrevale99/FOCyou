@@ -10,6 +10,7 @@ int8_t inversor_init(const inversor_t *handle)
 
     // center-aligned pwm up-down
     handle->timer->CR1 &= ~TIM_CR1_CMS_Msk;
+    handle->timer->CR1 |= (3 << TIM_CR1_CMS_Pos);
 
     handle->timer->CCMR1 |= (6 << TIM_CCMR1_OC1M_Pos);
     handle->timer->CCMR1 |= TIM_CCMR1_OC1PE;
@@ -31,4 +32,13 @@ int8_t inversor_init(const inversor_t *handle)
     handle->timer->CR1 |= TIM_CR1_CEN;
 
     return 0;
+}
+
+uint32_t inversor_frequencia_chaveamento(const inversor_t *inv,
+                                         uint32_t sisClockHz)
+{
+    return (sisClockHz /
+           (2 * (inv->timer->PSC + 1) *
+            (inv->timer->ARR + 1)) /
+           1000);
 }
