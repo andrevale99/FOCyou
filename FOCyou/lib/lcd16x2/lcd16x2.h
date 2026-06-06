@@ -1,9 +1,9 @@
 #ifndef LCD16X2_H
 #define LCD16X2_H
 
-#include <stm32f411xe.h>
-
 #include <stdint.h>
+
+#include <stm32f411xe.h>
 
 #define WRITE 1
 #define CMD 0
