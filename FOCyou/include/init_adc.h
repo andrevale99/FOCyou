@@ -41,6 +41,8 @@ void init_periferico_adc(void)
     ADC1->SQR3 |= (6 << ADC_SQR3_SQ1_Pos) | (7 << ADC_SQR3_SQ2_Pos);
 
     ADC1->CR2 |= ADC_CR2_ADON;
+
+    //CONFIGURAR TIM1_CCR4 para estouro
 }
 
 #endif
