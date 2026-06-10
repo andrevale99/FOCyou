@@ -4,15 +4,14 @@
 
 #include <arm_math.h>
 
-#include "macros.h"
 #include "init_rcc.h"
-#include "init_adc.h"
 #include "init_systick.h"
-#include "init_lcd16x2.h"
 #include "init_inversor.h"
 
+#include "timer.h"
+
 #include "lcd16x2.h"
-#include "inversor.h"
+#include "init_lcd16x2.h"
 
 const lcd16x2_handle lcd = {
     .d4.write = write_d4,
@@ -26,17 +25,16 @@ const lcd16x2_handle lcd = {
     .delay_ms = delay_ms,
 };
 
-const inversor_t inv = {
-    .timer = TIM1,
-    .periodo = 624,
-    .prescale = 1,
+const timer_inversor_t invTimer =
+    {
+        .advTimer = TIM1,
+        .autoreload = 624,
+        .prescale = 1,
 
-    .a.fase = 500,
-    .b.fase = 0,
-    .c.fase = 0,
+        .compare_a = 100,
+        .compare_b = 300,
+        .compare_c = 500,
 };
-
-foc_transform_t foc = {0};
 
 int main(void)
 {
@@ -44,38 +42,19 @@ int main(void)
     init_rcc();
     init_systick();
 
-    init_periferico_lcd16x2();
-    init_periferico_inversor();
-    init_periferico_adc();
-
-    lcd16x2_init_4bits(&lcd);
+    lcd16x2_init_4bits(&lcd, init_periferico_lcd16x2);
     lcd16x2_send_cmd(&lcd, DISPLAY_ON | CURSOR_ON);
 
-    inversor_init(&inv);
+    timer_inversor_init(&invTimer, init_periferico_inversor);
 
     char buffer[16];
-    int size = 0;
+    timer_get_frequency_inversor(&invTimer);
+    int size = sprintf(buffer, "SW:%ldkHz", timer_get_frequency_inversor(&invTimer));
+    lcd16x2_write_string(&lcd, buffer, size);
+    lcd16x2_send_cmd(&lcd, RETURN_HOME);
+
     while (1)
     {
-        size = sprintf(buffer, "SW:%ldkHz", inversor_frequencia_chaveamento(&inv, SystemCoreClock));
-        lcd16x2_write_string(&lcd, buffer, size);
-
-        ADC1->CR2 |= ADC_CR2_SWSTART;
-        while (!(ADC1->SR & ADC_SR_EOC))
-            ;
-        uint16_t adc1 = ADC1->DR;
-
-        while (!(ADC1->SR & ADC_SR_EOC))
-            ;
-        uint16_t adc2 =  ADC1->DR;
-
-        lcd16x2_send_cmd(&lcd, SECOND_LINE | 0x01);
-        size = sprintf(buffer, "%d  %d ", adc1, adc2);
-        lcd16x2_write_string(&lcd, buffer, size);
-
-        lcd16x2_send_cmd(&lcd, RETURN_HOME);
-
-        delay_ms(2000);
     }
 
     return 0;

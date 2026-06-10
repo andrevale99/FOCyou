@@ -72,7 +72,7 @@ typedef struct
  * @retval -1 Ponteiro para função de atraso (`delay_ms`) inválido,
  * ou handle vazio.
  */
-int8_t lcd16x2_init_4bits(const lcd16x2_handle *);
+int8_t lcd16x2_init_4bits(const lcd16x2_handle *, void (*)(void));
 
 /**
  * @brief Envia um comando para o display LCD.
