@@ -13,6 +13,8 @@
 #include "lcd16x2.h"
 #include "init_lcd16x2.h"
 
+#include "inversor.h"
+
 const lcd16x2_handle lcd = {
     .d4.write = write_d4,
     .d5.write = write_d5,
@@ -31,9 +33,13 @@ const timer_inversor_t invTimer =
         .autoreload = 624,
         .prescale = 1,
 
-        .compare_a = 100,
-        .compare_b = 300,
-        .compare_c = 500,
+        .compare_a = 0,
+        .compare_b = 0,
+        .compare_c = 0,
+};
+
+const inversor_t inv = {
+    .invTimer = &invTimer,
 };
 
 int main(void)
@@ -50,6 +56,11 @@ int main(void)
     char buffer[16];
     timer_get_frequency_inversor(&invTimer);
     int size = sprintf(buffer, "SW:%ldkHz", timer_get_frequency_inversor(&invTimer));
+    lcd16x2_write_string(&lcd, buffer, size);
+
+    lcd16x2_send_cmd(&lcd, SECOND_LINE);
+    inversor_set_duty(&inv, 67, 88, 12);
+    size = sprintf(buffer, "%ld %ld %ld", TIM1->CCR1, TIM1->CCR2, TIM1->CCR3);
     lcd16x2_write_string(&lcd, buffer, size);
     lcd16x2_send_cmd(&lcd, RETURN_HOME);
 
