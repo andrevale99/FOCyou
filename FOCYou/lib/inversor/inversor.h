@@ -5,10 +5,17 @@
 
 #include "timer.h"
 
+typedef enum
+{
+    phase_A = 0,
+    phase_B = 1,
+    phase_C = 2,
+} phase;
+
 typedef struct
 {
     const timer_inversor_t *invTimer;
-}inversor_t;
+} inversor_t;
 
 /**
  * @brief Atualiza o ciclo de trabalho dos três canais PWM do inversor.
@@ -36,9 +43,46 @@ typedef struct
  * @warning Esta função assume que o membro invTimer da estrutura
  *          @p inv_t foi previamente inicializado e contém ponteiros válidos.
  */
-uint8_t inversor_set_duty(inversor_t *inv_t,
+int8_t inversor_set_duty(const inversor_t *inv_t,
                           uint32_t duty_a,
                           uint32_t duty_b,
                           uint32_t duty_c);
+
+/**
+ * @brief Obtém o ciclo de trabalho de uma fase do inversor em porcentagem.
+ *
+ * Calcula o duty cycle correspondente ao canal PWM associado à fase
+ * especificada, retornando o resultado em porcentagem no intervalo
+ * aproximado de 0 a 100%.
+ *
+ * O cálculo é realizado a partir da razão entre o valor do registrador
+ * de comparação (CCRx) e o valor do registrador de auto-reload (ARR):
+ *
+ * @f[
+ * Duty(\%) = \frac{CCR_x \times 100}{ARR}
+ * @f]
+ *
+ * A implementação utiliza arredondamento para o inteiro mais próximo,
+ * adicionando metade do divisor antes da divisão inteira.
+ *
+ * @param[in] inv_t Ponteiro para a estrutura do inversor.
+ * @param[in] phase Fase desejada:
+ *                  - A: utiliza CCR1
+ *                  - B: utiliza CCR2
+ *                  - C: utiliza CCR3
+ *
+ * @return Duty cycle da fase selecionada em porcentagem.
+ *
+ * @retval 0 Retornado quando:
+ *           - @p inv_t é NULL;
+ *           - a fase informada é inválida;
+ *           - o duty cycle calculado é igual a 0%.
+ *
+ * @note O valor retornado é limitado pela resolução do tipo uint8_t.
+ *
+ * @warning A função assume que o temporizador associado ao inversor foi
+ * previamente inicializado e que o valor de ARR é diferente de zero.
+ */
+int8_t inversor_get_duty_percent(const inversor_t *inv_t, phase phase);
 
 #endif
