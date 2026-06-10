@@ -42,6 +42,10 @@ const inversor_t inv = {
     .invTimer = &invTimer,
 };
 
+char buffer[16];
+
+void write_data(void);
+
 int main(void)
 {
 
@@ -53,20 +57,31 @@ int main(void)
 
     timer_inversor_init(&invTimer, init_periferico_inversor);
 
-    char buffer[16];
     timer_get_frequency_inversor(&invTimer);
-    int size = sprintf(buffer, "SW:%ldkHz", timer_get_frequency_inversor(&invTimer));
+    int size = sprintf(buffer, "%ldkHz", timer_get_frequency_inversor(&invTimer));
     lcd16x2_write_string(&lcd, buffer, size);
-
-    lcd16x2_send_cmd(&lcd, SECOND_LINE);
-    inversor_set_duty(&inv, 67, 88, 12);
-    size = sprintf(buffer, "%ld %ld %ld", TIM1->CCR1, TIM1->CCR2, TIM1->CCR3);
-    lcd16x2_write_string(&lcd, buffer, size);
-    lcd16x2_send_cmd(&lcd, RETURN_HOME);
 
     while (1)
     {
+        write_data();
+        delay_ms(1000);
     }
 
     return 0;
+}
+
+void write_data(void)
+{
+    lcd16x2_send_cmd(&lcd, SET_DDRAM | 0x6);
+    int size = sprintf(buffer, " %dRPM", 254);
+    lcd16x2_write_string(&lcd, buffer, size);
+
+    lcd16x2_send_cmd(&lcd, SECOND_LINE);
+    inversor_set_duty(&inv, 550, 624 / 2, 62);
+    size = sprintf(buffer, "%d %d %d",
+                   inversor_get_duty_percent(&inv, A),
+                   inversor_get_duty_percent(&inv, B),
+                   inversor_get_duty_percent(&inv, C));
+    lcd16x2_write_string(&lcd, buffer, size);
+    lcd16x2_send_cmd(&lcd, RETURN_HOME);
 }
