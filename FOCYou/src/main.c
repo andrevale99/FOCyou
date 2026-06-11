@@ -7,6 +7,7 @@
 #include "init_rcc.h"
 #include "init_systick.h"
 #include "init_inversor.h"
+#include "init_adc.h"
 
 #include "timer.h"
 
@@ -27,15 +28,11 @@ const lcd16x2_handle lcd = {
     .delay_ms = delay_ms,
 };
 
-const timer_inversor_t invTimer =
+timer_inversor_t invTimer =
     {
         .advTimer = TIM1,
         .autoreload = 624,
         .prescale = 1,
-
-        .compare_a = 0,
-        .compare_b = 0,
-        .compare_c = 0,
 };
 
 const inversor_t inv = {
@@ -57,6 +54,8 @@ int main(void)
 
     timer_inversor_init(&invTimer, init_periferico_inversor);
 
+    init_periferico_adc();
+
     timer_get_frequency_inversor(&invTimer);
     int size = sprintf(buffer, "%ldkHz", timer_get_frequency_inversor(&invTimer));
     lcd16x2_write_string(&lcd, buffer, size);
@@ -72,16 +71,25 @@ int main(void)
 
 void write_data(void)
 {
+    int size = 0;
+
     lcd16x2_send_cmd(&lcd, SET_DDRAM | 0x6);
-    int size = sprintf(buffer, " %dRPM", 254);
+    size = sprintf(buffer, " %dRPM", 254);
     lcd16x2_write_string(&lcd, buffer, size);
 
     lcd16x2_send_cmd(&lcd, SECOND_LINE);
     inversor_set_duty(&inv, 550, 624 / 2, 62);
     size = sprintf(buffer, "%d %d %d",
-                   inversor_get_duty_percent(&inv, A),
-                   inversor_get_duty_percent(&inv, B),
-                   inversor_get_duty_percent(&inv, C));
+                   inversor_get_duty_percent(&inv, phase_A),
+                   inversor_get_duty_percent(&inv, phase_B),
+                   inversor_get_duty_percent(&inv, phase_C));
     lcd16x2_write_string(&lcd, buffer, size);
+
+    lcd16x2_send_cmd(&lcd, SECOND_LINE | 0xA);
+    lcd16x2_write_string(&lcd, "    ", 4);
+    lcd16x2_send_cmd(&lcd, SECOND_LINE | 0xA);
+    size = sprintf(buffer, "%ld", ADC1->DR);
+    lcd16x2_write_string(&lcd, buffer, size);
+
     lcd16x2_send_cmd(&lcd, RETURN_HOME);
 }
