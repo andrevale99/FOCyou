@@ -83,6 +83,27 @@ int8_t inversor_set_duty(const inversor_t *inv_t,
  * @warning A função assume que o temporizador associado ao inversor foi
  * previamente inicializado e que o valor de ARR é diferente de zero.
  */
-int8_t inversor_get_duty_percent(const inversor_t *inv_t, phase phase);
+int8_t inversor_get_duty_percent(const inversor_t *, phase);
+
+/**
+ * @brief Obtém o valor atual do duty cycle de uma fase do inversor.
+ *
+ * Lê o valor do registrador de comparação (CCRx) associado à fase
+ * especificada e retorna o duty cycle configurado para o canal PWM.
+ *
+ * @param[in] inv_t Ponteiro para a estrutura de configuração do inversor.
+ * @param[in] phase Fase da qual o duty cycle será obtido
+ *                  (phase_A, phase_B ou phase_C).
+ *
+ * @return Valor do registrador CCR correspondente à fase selecionada.
+ * @return 0 Caso @p inv_t seja NULL ou a fase informada seja inválida.
+ *
+ * @note O valor retornado corresponde ao valor bruto do registrador CCR,
+ *       não ao duty cycle em porcentagem. Para obter o duty cycle em
+ *       porcentagem, é necessário relacioná-lo ao valor do ARR do timer.
+ *
+ * @warning O valor 0 pode indicar tanto erro quanto um duty cycle de 0%.
+ */
+uint32_t inversor_get_duty(inversor_t *, phase );
 
 #endif

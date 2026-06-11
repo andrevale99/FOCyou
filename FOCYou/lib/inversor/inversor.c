@@ -50,3 +50,32 @@ int8_t inversor_get_duty_percent(const inversor_t *inv_t, phase _phase)
 
     return (uint8_t)((ccr * 100U + arr / 2U) / arr);
 }
+
+uint32_t inversor_get_duty(inversor_t *inv_t, phase phase)
+{
+    if (!inv_t)
+        return 0;
+
+    uint32_t ret = 0;
+
+    switch (phase)
+    {
+    case phase_A:
+        ret = inv_t->invTimer->advTimer->CCR1;
+        break;
+
+    case phase_B:
+        ret = inv_t->invTimer->advTimer->CCR2;
+        break;
+
+    case phase_C:
+        ret = inv_t->invTimer->advTimer->CCR3;
+        break;
+
+    default:
+        ret = 0;
+        break;
+    }
+
+    return ret;
+}
