@@ -60,19 +60,22 @@ typedef struct
 /**
  * @brief Inicializa o display LCD 16x2 no modo de comunicação de 4 bits.
  *
- * Esta função executa a sequência de inicialização necessária para
- * configurar o controlador LCD compatível com HD44780 em modo de 4 bits.
- * Também configura o número de linhas, limpa o display, habilita o cursor
- * piscante e define o modo de incremento automático do cursor.
+ * Executa a sequência de inicialização recomendada pelo controlador
+ * HD44780 para operação em 4 bits. A função configura o display para
+ * duas linhas, limpa a memória de exibição, habilita o incremento
+ * automático do cursor e ativa o display.
  *
  * @param handle Ponteiro para a estrutura de controle do LCD.
+ * @param init_func Função responsável por configurar os GPIOs utilizados
+ *                  pela interface do display.
  *
- * @return int8_t
- * @retval 0 Inicialização realizada com sucesso.
- * @retval -1 Ponteiro para função de atraso (`delay_ms`) inválido,
- * ou handle vazio.
+ * @retval 0 Inicialização concluída com sucesso.
+ * @retval -1 Ponteiro para a função de inicialização inválido.
+ * @retval -2 Estrutura de controle inválida ou função de atraso não definida.
+ *
+ * @note A função init_func() deve configurar todos os pinos do LCD como saída.
  */
-int8_t lcd16x2_init_4bits(const lcd16x2_handle *, void (*)(void));
+int8_t lcd16x2_init_4bits(const lcd16x2_handle *handle, void (*init_func)(void));
 
 /**
  * @brief Envia um comando para o display LCD.
