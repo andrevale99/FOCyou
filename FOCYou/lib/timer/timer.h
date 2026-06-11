@@ -10,10 +10,6 @@ typedef struct
     TIM_TypeDef *const advTimer;
     const uint32_t prescale;
     const uint32_t autoreload;
-
-    uint32_t compare_a;
-    uint32_t compare_b;
-    uint32_t compare_c;
 }timer_inversor_t;
 
 /**

@@ -39,9 +39,9 @@ int8_t timer_inversor_init(const timer_inversor_t *inv, void (*init_func)(void))
     inv->advTimer->BDTR &= ~TIM_BDTR_DTG_Msk;
     inv->advTimer->BDTR |= (130 << TIM_BDTR_DTG_Pos);
 
-    inv->advTimer->CCR1 = inv->compare_a;
-    inv->advTimer->CCR2 = inv->compare_b;
-    inv->advTimer->CCR3 = inv->compare_c;
+    inv->advTimer->CCR1 = 0;
+    inv->advTimer->CCR2 = 0;
+    inv->advTimer->CCR3 = 0;
 
     /* Main output enable */
     inv->advTimer->BDTR |= TIM_BDTR_MOE;
@@ -61,4 +61,9 @@ uint32_t timer_get_frequency_inversor(const timer_inversor_t *inv)
             (2 * (inv->advTimer->PSC + 1) *
              (inv->advTimer->ARR + 1)) /
             1000);
+}
+
+void timer_adc_init(void)
+{
+
 }
