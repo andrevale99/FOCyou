@@ -34,12 +34,6 @@ void init_periferico_inversor(void)
         RCC_AHB1ENR_GPIOAEN |
         RCC_AHB1ENR_GPIOBEN;
 
-    TIM1->CR1   = 0;
-    TIM1->CCER  = 0;
-    TIM1->CCMR1 = 0;
-    TIM1->CCMR2 = 0;
-    TIM1->BDTR  = 0;
-
     /* CH1, CH2, CH3 */
     gpio_af1(GPIOA, INVERSOR_UH_GPIO); // PA8
     gpio_af1(GPIOA, INVERSOR_VH_GPIO); // PA9
