@@ -88,7 +88,7 @@ void write_data(void)
     lcd16x2_send_cmd(&lcd, SECOND_LINE | 0xA);
     lcd16x2_write_string(&lcd, "    ", 4);
     lcd16x2_send_cmd(&lcd, SECOND_LINE | 0xA);
-    size = sprintf(buffer, "%ld", ADC1->DR);
+    size = sprintf(buffer, "%ld", adc_get_dma1());
     lcd16x2_write_string(&lcd, buffer, size);
 
     lcd16x2_send_cmd(&lcd, RETURN_HOME);
