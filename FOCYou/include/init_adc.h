@@ -54,7 +54,7 @@ void init_periferico_adc(void)
     TIM3->ARR = 624;
 
     /* Ponto do compare */
-    TIM3->CCR1 = 500;
+    TIM3->CCR1 = 624 / 2;
 
     /* Canal 1 como Output Compare */
     TIM3->CCMR1 &= ~TIM_CCMR1_CC1S_Msk;
