@@ -43,6 +43,17 @@ char buffer[16];
 
 void write_data(void);
 
+int map_value(uint32_t x,
+                   uint32_t in_min,
+                   uint32_t in_max,
+                   uint32_t out_min,
+                   uint32_t out_max)
+{
+    return (x - in_min) * (out_max - out_min) /
+               (in_max - in_min) +
+           out_min;
+}
+
 int main(void)
 {
 
@@ -73,12 +84,15 @@ void write_data(void)
 {
     int size = 0;
 
+    int a = adc_get_dma1();
+    int teste = map_value(a, 0, 4095, 0, 624);
+
     lcd16x2_send_cmd(&lcd, SET_DDRAM | 0x6);
     size = sprintf(buffer, " %dRPM", 254);
     lcd16x2_write_string(&lcd, buffer, size);
 
     lcd16x2_send_cmd(&lcd, SECOND_LINE);
-    inversor_set_duty(&inv, 550, 624 / 2, 62);
+    inversor_set_duty(&inv, teste, 61 / 2, 0);
     size = sprintf(buffer, "%d %d %d",
                    inversor_get_duty_percent(&inv, phase_A),
                    inversor_get_duty_percent(&inv, phase_B),
@@ -88,7 +102,7 @@ void write_data(void)
     lcd16x2_send_cmd(&lcd, SECOND_LINE | 0xA);
     lcd16x2_write_string(&lcd, "    ", 4);
     lcd16x2_send_cmd(&lcd, SECOND_LINE | 0xA);
-    size = sprintf(buffer, "%ld", adc_get_dma1());
+    size = sprintf(buffer, "%ld", teste);
     lcd16x2_write_string(&lcd, buffer, size);
 
     lcd16x2_send_cmd(&lcd, RETURN_HOME);
